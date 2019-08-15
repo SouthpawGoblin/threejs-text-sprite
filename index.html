@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+  <title>threejs-text-sprite demo</title>
+  <meta charset="utf-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="width: 100%; height: 100%;"></div>
+  <script src="lib/three.min.js"></script>
+  <script src="lib/orbit-controls.js"></script>
+  <script src="threejs-text-sprite.js"></script>
+  <script>
+    //parent dom
+    var parentDom = document.getElementById('app');
+    var width = parentDom.clientWidth;
+    var height = parentDom.clientHeight;
+
+    //scene
+    var scene = new THREE.Scene();
+
+    //camera
+    var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 2000);
+    camera.position.set(0, -600 * Math.sin(Math.PI * 2 / 9), 600 * Math.cos(Math.PI * 2 / 9));
+
+    //renderer
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    parentDom.appendChild(renderer.domElement);
+
+    //controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.minDistance = 0.1;
+    controls.maxDistance = 1000;
+
+    // floor plane
+    var floorGeo = new THREE.PlaneBufferGeometry(1000, 1000);
+    var floorMtl = new THREE.MeshBasicMaterial({
+      color: '#ffffff'
+    });
+    var floor = new THREE.Mesh(floorGeo, floorMtl);
+    scene.add(floor);
+
+    // grid
+    var gridHelper = new THREE.GridHelper(1000, 20, '#aaaaaa', '#aaaaaa');
+    gridHelper.rotation.x = Math.PI / 2;
+    scene.add(gridHelper);
+
+    // text sprite
+    var config1 = {
+      fontFace: 'Helvetica',
+      fontSize: 26,
+      fontColor: 'rgba(255, 255, 255, 1)',
+      fontBold: true,
+      fontItalic: false,
+      textAlign: 'center',
+      borderThickness: 10,
+      borderColor: 'rgba(50, 50, 255, 0.8)',
+      borderRadius: 10,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)'
+    };
+    var text1 = [];
+    for (var cfg in config1) {
+      text1.push(cfg + ': ' + config1[cfg]);
+    }
+    var textSprite1 = generateTextSprite(text1.join('\n'), config1);
+    textSprite1.position.set(-150, 150, 150);
+    scene.add(textSprite1);
+
+    var config2 = {
+      fontFace: 'Ariel',
+      fontSize: 32,
+      fontColor: 'rgba(0, 0, 0, 1)',
+      fontBold: false,
+      fontItalic: true,
+      textAlign: 'left',
+      borderThickness: 15,
+      borderColor: 'rgba(50, 255, 50, 0.5)',
+      borderRadius: 4,
+      backgroundColor: 'rgba(200, 200, 200, 0.8)'
+    };
+    var text2 = [];
+    for (var cfg in config2) {
+      text2.push(cfg + ': ' + config2[cfg]);
+    }
+    var textSprite2 = generateTextSprite(text2.join('\n'), config2);
+    textSprite2.position.set(-150, -150, 150);
+    scene.add(textSprite2);
+
+    var textSpriteChinese = generateTextSprite('这是中文\n多行的中文\n这行好长好长好长好长好长好长好长好长好长好长好长\n耶！', {
+      fontFace: '楷体',
+      fontSize: 40,
+      fontColor: 'rgba(255, 255, 255, 1)',
+      fontBold: true,
+      fontItalic: false,
+      textAlign: 'right',
+      borderThickness: 0,
+      borderColor: 'rgba(0, 0, 0, 0)',
+      borderRadius: 10,
+      backgroundColor: 'rgba(255, 50, 50, 0.8)'
+    });
+    textSpriteChinese.position.set(200, 0, 150);
+    scene.add(textSpriteChinese);
+
+    // animate
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+      controls.update();
+    }
+    animate();
+  </script>
+</body>
+</html>
